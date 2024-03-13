@@ -14,7 +14,7 @@ def save_model(path, model, optimizer, scheduler, epoch):
 
 def dataset_path_list(root_dir):
     categories = []
-    file_paths = []
+    file_path_list = []
     file_label_list = []
     categories_file_paths = []
     path = os.getcwd()
@@ -29,7 +29,7 @@ def dataset_path_list(root_dir):
                   full_paths = []
                   for s_path in sub_files:
                     full_paths.append(str(path / fp) + "/" + s_path)
-                  file_paths += full_paths # 전체 파일 경로
+                  file_path_list += full_paths # 전체 파일 경로
                   categories_file_paths.append(full_paths)  # 카테고리별 파일 경로
                   file_label_list += [d]*len(full_paths)
                   # print([d]*len(sub_files))
