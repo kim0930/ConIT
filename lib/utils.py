@@ -12,8 +12,6 @@ def save_model(path, model, optimizer, scheduler, epoch):
     torch.save(state_dict, path)
 
 
-
-
 def dataset_path_list(root_dir):
     categories = []
     file_paths = []
