@@ -87,7 +87,7 @@ def prepare_dataset(root_dir, split_ratio):
     
     
     # return categories, categories_file_paths, file_path_list, file_label_list
-    return train_data, val_data, test_data
+    return categories, train_data, val_data, test_data
 
 def visualize_img(dataset, num):
     '''
@@ -113,8 +113,8 @@ def visualize_img(dataset, num):
 
 class CustomDataset(Dataset):
     def __init__(self, data_image_paths, data_labels, transform=None):
-        self.data_image_paths = data_image_paths
-        self.data_labels = data_labels
+        self.data_image_paths = data_image_paths.to_list()
+        self.data_labels = data_labels.to_list()
         self.transform = transform
 
     def __len__(self):
