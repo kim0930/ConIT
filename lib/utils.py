@@ -163,7 +163,7 @@ class LabelSampler(Sampler): # 라벨별로 지정된 수만큼 데이터를 추
 
 
 # 이미지의 RGB 채널별 통계량 확인 함수
-def normalize_dataset(data1, datas2):
+def normalize_dataset(data1, data2):
     # Transform and Load Data
     train_transform = T.Compose([
         T.Resize((224, 224)),
