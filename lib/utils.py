@@ -6,6 +6,7 @@ import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split, Dataset, Sampler
+import torchvision.transforms as T
 
 def save_model(path, model, optimizer, scheduler, epoch):
     state_dict = {
