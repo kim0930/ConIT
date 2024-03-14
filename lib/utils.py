@@ -87,7 +87,7 @@ def prepare_dataset(root_dir, split_ratio):
     
     
     # return categories, categories_file_paths, file_path_list, file_label_list
-    return categories, train_data, val_data, test_data
+    return categories, mapping, train_data, val_data, test_data
 
 def visualize_img(dataset, num):
     '''
