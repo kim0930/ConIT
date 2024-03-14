@@ -61,6 +61,7 @@ def dataset_path_list(root_dir, split_ratio):
     pipe = pipe.reset_index(drop=True) # 다시 순서대로 인덱스 부여
     
     print(pipe.head(10))
+    print()
 
     data_frame = pipe
     train_size = int(split_ratio[0] * len(data_frame))  # 80%를 train, 20%를 validation으로 사용
