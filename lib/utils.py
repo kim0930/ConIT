@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from PIL import Image
 
 def save_model(path, model, optimizer, scheduler, epoch):
     state_dict = {
@@ -84,3 +85,25 @@ def dataset_path_list(root_dir, split_ratio):
     
     # return categories, categories_file_paths, file_path_list, file_label_list
     return train_data, val_data, test_data
+
+def visualize_img(dataset, num):
+    '''
+    num: 보여줄 이미지의 수
+    '''
+    # 데이터프레임에서 이미지 파일 경로 및 라벨 추출
+    data_image_paths = (dataset["Path"]).tolist()
+    data_labels = dataset["Label"].tolist()
+    
+    i=1
+    for path in data_image_paths:
+      img = Image.open(path)
+      plt.subplot(2, int(num/2), i)
+      plt.imshow(img)
+      print(f"{path}")
+      plt.xticks([])
+      plt.yticks([])
+      i+=1
+      if i > num:
+        break
+    plt.tight_layout()
+    plt.show()
