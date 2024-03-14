@@ -15,7 +15,7 @@ def save_model(path, model, optimizer, scheduler, epoch):
     torch.save(state_dict, path)
 
 
-def dataset_path_list(root_dir, split_ratio):
+def prepare_dataset(root_dir, split_ratio):
     '''
     split_ratio: [train, val, test] / For example, [0.8, 0.1, 0.1] / val=test는 항상 같게. 
     
