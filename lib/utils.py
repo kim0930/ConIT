@@ -4,6 +4,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from PIL import Image
+import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader, random_split, Dataset, Sampler
 
 def save_model(path, model, optimizer, scheduler, epoch):
     state_dict = {
@@ -107,3 +109,85 @@ def visualize_img(dataset, num):
         break
     plt.tight_layout()
     plt.show()
+
+class CustomDataset(Dataset):
+    def __init__(self, data_image_paths, data_labels, transform=None):
+        self.data_image_paths = data_image_paths
+        self.data_labels = data_labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data_image_paths)
+
+    def __getitem__(self, idx):
+        img_path = self.data_image_paths[idx]
+        image = Image.open(img_path).convert('RGB')
+        label = self.data_labels[idx]
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
+# val_dataset에서 각각 라벨이 0,1,2,3 인 데이터를 4개씩 랜덤 추출
+
+
+class LabelSampler(Sampler): # 라벨별로 지정된 수만큼 데이터를 추출
+    def __init__(self, dataset, num_samples_per_label):
+        self.dataset = dataset
+        self.num_samples_per_label = num_samples_per_label
+        self.label_indices = self._create_label_indices()
+
+    # 각 라벨에 해당하는 인덱스를 모아 딕셔너리로 저장
+    def _create_label_indices(self):
+        label_indices = {label: [] for label in set(self.dataset.data_labels)}
+        for i, label in enumerate(self.dataset.data_labels):
+            label_indices[label].append(i)
+        return label_indices
+
+    # 각 라벨에 대해 지정된 수만큼 무작위로 인덱스를 선택하여 반환
+    def __iter__(self):
+        indices = []
+        for label, indices_per_label in self.label_indices.items():
+            if len(indices_per_label) >= self.num_samples_per_label:
+                selected_indices = torch.randperm(len(indices_per_label))[:self.num_samples_per_label]
+                indices.extend([indices_per_label[idx] for idx in selected_indices])
+            else:
+                indices.extend(indices_per_label * self.num_samples_per_label)
+        return iter(indices)
+
+    # 데이터셋의 전체 길이를 반환
+    def __len__(self):
+        return len(self.dataset)
+
+
+# 이미지의 RGB 채널별 통계량 확인 함수
+def normalize_dataset(data1, datas2):
+    # Transform and Load Data
+    train_transform = T.Compose([
+        T.Resize((224, 224)),
+        T.ToTensor()
+        ])
+
+    test_transform = T.Compose([
+        T.Resize((224, 224)),
+        T.ToTensor()
+        ])
+    # Update the datasets with the new transform
+    dataset1 = CustomDataset(data1["Path"], data1["Label"], transform = train_transform)
+    dataset2 = CustomDataset(data2["Path"], data2["Label"], transform = test_transform)
+    dataset = dataset1 + dataset2
+    imgs = np.array([img.numpy() for img, _ in dataset])
+    print(f'shape: {imgs.shape}')
+
+    mean_r = np.mean(imgs, axis=(2, 3))[:, 0].mean()
+    mean_g = np.mean(imgs, axis=(2, 3))[:, 1].mean()
+    mean_b = np.mean(imgs, axis=(2, 3))[:, 2].mean()
+
+    std_r = np.std(imgs, axis=(2, 3))[:, 0].std()
+    std_g = np.std(imgs, axis=(2, 3))[:, 1].std()
+    std_b = np.std(imgs, axis=(2, 3))[:, 2].std()
+
+    print(f'mean: {mean_r, mean_g, mean_b}')
+    print(f'std: {std_r, std_g, std_b}')
+    return  [mean_r, mean_g, mean_b], [std_r, std_g, std_b]
